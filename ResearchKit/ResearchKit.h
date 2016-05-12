@@ -40,6 +40,7 @@
 #import <ResearchKit/ORKCompletionStep.h>
 #import <ResearchKit/ORKFormStep.h>
 #import <ResearchKit/ORKStepNavigationRule.h>
+#import <ResearchKit/ORKSkipStepNavigationRule.h>
 #import <ResearchKit/ORKImageCaptureStep.h>
 #import <ResearchKit/ORKReviewStep.h>
 #import <ResearchKit/ORKWaitStep.h>

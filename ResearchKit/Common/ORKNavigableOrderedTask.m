@@ -33,6 +33,7 @@
 #import "ORKOrderedTask_Internal.h"
 #import "ORKHelpers.h"
 #import "ORKStepNavigationRule.h"
+#import "ORKSkipStepNavigationRule.h"
 #import "ORKDefines_Private.h"
 #import "ORKStep_Private.h"
 #import "ORKHolePegTestPlaceStep.h"
@@ -41,12 +42,14 @@
 
 @implementation ORKNavigableOrderedTask {
     NSMutableDictionary *_stepNavigationRules;
+    NSMutableDictionary *_skipStepNavigationRules;
 }
 
 - (instancetype)initWithIdentifier:(NSString *)identifier steps:(NSArray<ORKStep *> *)steps {
     self = [super initWithIdentifier:identifier steps:steps];
     if (self) {
         _stepNavigationRules = nil;
+        _skipStepNavigationRules = nil;
         _shouldReportProgress = NO;
     }
     return self;
@@ -74,24 +77,62 @@
     [_stepNavigationRules removeObjectForKey:triggerStepIdentifier];
 }
 
-- (ORKStep *)stepAfterStep:(ORKStep *)step withResult:(ORKTaskResult *)result {
-    ORKStep *nextStep = nil;
-    ORKStepNavigationRule *navigationRule = _stepNavigationRules[step.identifier];
-    NSString *nextStepIdentifier = [navigationRule identifierForDestinationStepWithTaskResult:result];
-    if (![nextStepIdentifier isEqualToString:ORKNullStepIdentifier]) { // If ORKNullStepIdentifier, return nil to end task
-        if (nextStepIdentifier) {
-            nextStep = [self stepWithIdentifier:nextStepIdentifier];
-            
-            if (step && nextStep && [self indexOfStep:nextStep] <= [self indexOfStep:step]) {
-                ORK_Log_Warning(@"Index of next step (\"%@\") is equal or lower than index of current step (\"%@\") in ordered task. Make sure this is intentional as you could loop idefinitely without appropriate navigation rules. Also please note that you'll get duplicate result entries each time you loop over the same step.", nextStep.identifier, step.identifier);
-            }
-        } else {
-            nextStep = [super stepAfterStep:step withResult:result];
-        }
+- (void)setSkipNavigationRule:(ORKSkipStepNavigationRule *)skipStepNavigationRule forStepIdentifier:(NSString *)stepIdentifier {
+    ORKThrowInvalidArgumentExceptionIfNil(skipStepNavigationRule);
+    ORKThrowInvalidArgumentExceptionIfNil(stepIdentifier);
+    
+    if (!_skipStepNavigationRules) {
+        _skipStepNavigationRules = [NSMutableDictionary new];
     }
-    return nextStep;
+    _skipStepNavigationRules[stepIdentifier] = skipStepNavigationRule;
 }
 
+- (ORKSkipStepNavigationRule *)skipNavigationRuleForStepIdentifier:(NSString *)stepIdentifier {
+    ORKThrowInvalidArgumentExceptionIfNil(stepIdentifier);
+    
+    return _skipStepNavigationRules[stepIdentifier];
+}
+
+- (void)removeSkipNavigationRuleForStepIdentifier:(NSString *)stepIdentifier {
+    ORKThrowInvalidArgumentExceptionIfNil(stepIdentifier);
+    
+    [_skipStepNavigationRules removeObjectForKey:stepIdentifier];
+}
+
+- (ORKStep *)stepAfterStep:(ORKStep *)currStep withResult:(ORKTaskResult *)result {
+    ORKStep *returnStep = nil;
+    ORKStep *nextStep = [super stepAfterStep:currStep withResult:result];
+    
+    ORKStepNavigationRule *navigationRule = _stepNavigationRules[currStep.identifier];
+    ORKSkipStepNavigationRule *skipNavigationRuleForNextStep = _skipStepNavigationRules[nextStep.identifier];
+    
+    //check if there is a skip rule for the following step.
+    if (skipNavigationRuleForNextStep) {
+        //see where we skip to... but skip can't be to nothing, we still need to return a default next step (idiosyncracy of stepAfterStep)
+        returnStep = [self getStepSkippedToFrom:currStep withResult:result];
+    }
+    else{
+        //no skip rule for next step, or next step returns nil
+        NSString *nextStepIdentifier = nil;
+        nextStepIdentifier = [navigationRule identifierForDestinationStepWithTaskResult:result];
+        if (![nextStepIdentifier isEqualToString:ORKNullStepIdentifier]) { // If ORKNullStepIdentifier, return nil to end task
+            if (nextStepIdentifier) {
+                returnStep = [self stepWithIdentifier:nextStepIdentifier];
+                
+                if (currStep && returnStep && [self indexOfStep:returnStep] <= [self indexOfStep:currStep]) {
+                    ORK_Log_Warning(@"Index of next step (\"%@\") is equal or lower than index of current step (\"%@\") in ordered task. Make sure this is intentional as you could loop idefinitely without appropriate navigation rules. Also please note that you'll get duplicate result entries each time you loop over the same step.", nextStep.identifier, currStep.identifier);
+                }
+            } else {
+                returnStep = [super stepAfterStep:currStep withResult:result];
+            }
+        }
+        
+    }
+    
+    return returnStep;
+}
+
+//TODO: properly implement stepbefore for skips
 - (ORKStep *)stepBeforeStep:(ORKStep *)step withResult:(ORKTaskResult *)result {
     ORKStep *previousStep = nil;
     __block NSInteger indexOfCurrentStepResult = -1;
@@ -107,6 +148,40 @@
     return previousStep;
 }
 
+- (ORKStep *)getStepSkippedToFrom:(ORKStep *)step withResult:(ORKTaskResult *)result {
+    
+//TODO: use the 'next' property - after Friday -- this means that EACH step needs to parse a rule
+    //    ORKSkipStepNavigationRule *skipNavigationRuleForCurrStep = _skipStepNavigationRules[currStep.identifier];
+    //    ORKStep *defaultStep = [super stepAfterStep:currStep withResult:result];
+    //    NSString *returnStepIdentifier = [skipNavigationRuleForCurrStep identifierForNextStepWithTaskResult:result];
+    //(returnStepIdentifier) ? [self stepWithIdentifier:returnStepIdentifier] : nil;
+    
+    ORKStep *currStep = step;
+    
+    //returns default next step
+    ORKStep *returnStep = [super stepAfterStep:currStep withResult:result];
+
+    ORKSkipStepNavigationRule *skipNavigationRuleForReturnStep = _skipStepNavigationRules[returnStep.identifier];
+    
+    while(returnStep && skipNavigationRuleForReturnStep && [skipNavigationRuleForReturnStep stepShouldSkipWithTaskResult:result]){
+        returnStep = [super stepAfterStep:returnStep withResult:result];
+        skipNavigationRuleForReturnStep = (returnStep) ? _skipStepNavigationRules[returnStep.identifier] : nil;
+        //iterate until there's no more next step, or no more skipNavigationRule, or shouldSkip is NO
+    }
+    
+    return returnStep;
+}
+
+- (ORKStep *)getNextStepFor:(ORKStep *)step withResult:(ORKTaskResult *)result {
+    ORKStep *returnStep = nil;
+    return returnStep;
+}
+
+- (ORKStep *)getStepSkippedFromFor:(ORKStep *)step withResult:(ORKTaskResult *)result {
+    ORKStep *currStep = step;
+    return currStep;
+}
+
 // Assume ORKNavigableOrderedTask doesn't have a linear order unless user specifically overrides
 - (ORKTaskProgress)progressOfCurrentStep:(ORKStep *)step withResult:(ORKTaskResult *)result {
     if (_shouldReportProgress) {
@@ -119,6 +194,11 @@
 // This method should only be used by serialization (the stepNavigationRules property is published as readonly)
 - (void)setStepNavigationRules:(NSDictionary *)stepNavigationRules {
     _stepNavigationRules = [stepNavigationRules mutableCopy];
+}
+
+// This method should only be used by serialization (the skipStepNavigationRules property is published as readonly)
+- (void)setSkipNavigationRules:(NSDictionary *)skipStepNavigationRules {
+    _skipStepNavigationRules = [skipStepNavigationRules mutableCopy];
 }
 
 #pragma mark NSSecureCoding
@@ -148,6 +228,7 @@
 - (instancetype)copyWithZone:(NSZone *)zone {
     typeof(self) task = [super copyWithZone:zone];
     task->_stepNavigationRules = ORKMutableDictionaryCopyObjects(_stepNavigationRules);
+    task->_skipStepNavigationRules = ORKMutableDictionaryCopyObjects(_skipStepNavigationRules);
     task->_shouldReportProgress = _shouldReportProgress;
     return task;
 }
@@ -158,11 +239,12 @@
     __typeof(self) castObject = object;
     return isParentSame
     && ORKEqualObjects(self->_stepNavigationRules, castObject->_stepNavigationRules)
+    && ORKEqualObjects(self->_skipStepNavigationRules, castObject->_skipStepNavigationRules)
     && self->_shouldReportProgress == castObject.shouldReportProgress;
 }
 
 - (NSUInteger)hash {
-    return [super hash] ^ [_stepNavigationRules hash] ^ (_shouldReportProgress ? 0xf : 0x0);
+    return [super hash] ^ [_stepNavigationRules hash] ^ [_skipStepNavigationRules hash] ^ (_shouldReportProgress ? 0xf : 0x0);
 }
 
 #pragma mark - Predefined

@@ -36,6 +36,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ORKStepNavigationRule;
+@class ORKSkipStepNavigationRule;
 
 /**
  The `ORKNavigableOrderedTask` class adds conditional step navigation to the behavior inherited from the
@@ -90,6 +91,36 @@ ORK_CLASS_AVAILABLE
  @param triggerStepIdentifier   The identifier of the step whose rule is to be removed.
  */
 - (void)removeNavigationRuleForTriggerStepIdentifier:(NSString *)triggerStepIdentifier;
+
+/**
+ Adds a skip navigation rule for a trigger step identifier.
+ 
+ The rule will be used to determine whether the trigger step will be skipped. You cannot add two different skip navigation rules to the same trigger step identifier; only the most recently added rule is kept.
+ 
+ @param skipStepNavigationRule      The step navigation rule to be used when navigating forward from the
+ trigger step. A strong reference to the rule is maintained by
+ the task.
+ @param triggerStepIdentifier   The identifier of the step that triggers the rule.
+ */
+
+- (void)setSkipNavigationRule:(ORKSkipStepNavigationRule *)skipStepNavigationRule forStepIdentifier:(NSString *)stepIdentifier;
+
+/**
+ Returns the skip step navigation rule (if any) associated with a trigger step identifier.
+ 
+ @param triggerStepIdentifier   The identifier of the step whose rule you want to retrieve.
+ 
+ @return A skip step navigation rule, or `nil` if the trigger step identifier has none.
+ */
+
+- (ORKSkipStepNavigationRule *)skipNavigationRuleForStepIdentifier:(NSString *)stepIdentifier;
+
+/**
+ Removes the skip step navigation rule (if any) associated with the specified trigger step identifier.
+ 
+ @param triggerStepIdentifier   The identifier of the step whose rule is to be removed.
+ */
+- (void)removeSkipNavigationRuleForStepIdentifier:(NSString *)stepIdentifier;
 
 /**
  A dictionary of step navigation rules in the task, keyed by trigger step identifier.
