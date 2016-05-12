@@ -111,7 +111,7 @@
 		25ECC0A41AFBDD2700F3D63B /* ORKReactionTimeStimulusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25ECC0A21AFBDD2700F3D63B /* ORKReactionTimeStimulusView.m */; };
 		2EBFE11D1AE1B32D00CB8254 /* ORKUIViewAccessibilityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBFE11C1AE1B32D00CB8254 /* ORKUIViewAccessibilityTests.m */; };
 		2EBFE1201AE1B74100CB8254 /* ORKVoiceEngineTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EBFE11F1AE1B74100CB8254 /* ORKVoiceEngineTests.m */; };
-		424B41AF1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h in Headers */ = {isa = PBXBuildFile; fileRef = 424B41AB1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h */; };
+		424B41AF1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h in Headers */ = {isa = PBXBuildFile; fileRef = 424B41AB1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		424B41B01CE50F6A00186D4E /* ORKSkipStepNavigationRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 424B41AC1CE50F6A00186D4E /* ORKSkipStepNavigationRule.m */; };
 		6146D0A31B84A91E0068491D /* ORKLineGraphAccessibilityElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 6146D0A11B84A91E0068491D /* ORKLineGraphAccessibilityElement.h */; };
 		6146D0A41B84A91E0068491D /* ORKLineGraphAccessibilityElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 6146D0A21B84A91E0068491D /* ORKLineGraphAccessibilityElement.m */; };
@@ -1426,8 +1426,6 @@
 		86C40B511A8D7C5B00081FAC /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				424B41AC1CE50F6A00186D4E /* ORKSkipStepNavigationRule.m */,
-				424B41AB1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h */,
 				B12EFF331AB2110300A80147 /* Task */,
 				B12EFF341AB2111200A80147 /* Step */,
 				B12EFF3B1AB211E000A80147 /* Answer Format */,
@@ -1591,6 +1589,8 @@
 		B12EFF341AB2111200A80147 /* Step */ = {
 			isa = PBXGroup;
 			children = (
+				424B41AC1CE50F6A00186D4E /* ORKSkipStepNavigationRule.m */,
+				424B41AB1CE50F6A00186D4E /* ORKSkipStepNavigationRule.h */,
 				86C40BB91A8D7C5C00081FAC /* ORKStep.h */,
 				86C40BBA1A8D7C5C00081FAC /* ORKStep.m */,
 				86C40BBB1A8D7C5C00081FAC /* ORKStep_Private.h */,
