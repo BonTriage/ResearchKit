@@ -30,8 +30,10 @@
 
 
 #import "ORKDateTimePicker.h"
+
 #import "ORKAnswerFormat_Internal.h"
-#import "ORKHelpers.h"
+
+#import "ORKHelpers_Internal.h"
 
 
 @interface ORKDateTimePicker ()
@@ -70,10 +72,13 @@
 - (UIDatePicker *)pickerView {
     if (_pickerView == nil) {
         _pickerView = [[UIDatePicker alloc] init];
-        [_pickerView addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
+        [_pickerView addTarget:self action:@selector(valueDidChange:) forControlEvents:UIControlEventValueChanged];
         self.answerFormat = _answerFormat;
         self.answer = _answer;
     }
+    _pickerView.datePickerMode = UIDatePickerModeTime;
+    _pickerView.minuteInterval = 5;
+    [_pickerView setValue:[UIColor whiteColor] forKey:@"textColor"];
     return _pickerView;
 }
 
@@ -191,10 +196,10 @@
 - (void)pickerWillAppear {
     // Report current value, since ORKTimeIntervalPicker always has a value
     [self pickerView];
-    [self valueChanged:self];
+    [self valueDidChange:self];
 }
 
-- (void)valueChanged:(id)sender {
+- (void)valueDidChange:(id)sender {
     _date = _pickerView.date;
     
     if ([self isTimeOfDay]) {
@@ -220,7 +225,7 @@
 
 - (void)currentLocaleDidChange:(NSNotification *)notification {
     _labelFormatter = nil;
-    [self valueChanged:nil];
+    [self valueDidChange:nil];
 }
 
 - (void)dealloc {

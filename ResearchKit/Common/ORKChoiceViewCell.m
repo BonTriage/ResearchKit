@@ -30,9 +30,13 @@
 
 
 #import "ORKChoiceViewCell.h"
-#import "ORKSkin.h"
-#import "ORKHelpers.h"
+
+#import "ORKSelectionTitleLabel.h"
+#import "ORKSelectionSubTitleLabel.h"
+
 #import "ORKAccessibility.h"
+#import "ORKHelpers_Internal.h"
+#import "ORKSkin.h"
 
 
 static const CGFloat LabelRightMargin = 44.0;
@@ -105,6 +109,7 @@ static const CGFloat LabelRightMargin = 44.0;
             
         }
     }
+    _shortLabel.textColor = [UIColor colorWithRed:0.52 green:0.78 blue:0.99 alpha:1.0];
     [self updateSelectedItem];
 }
 
@@ -130,7 +135,7 @@ static const CGFloat LabelRightMargin = 44.0;
 - (void)updateSelectedItem {
     if (_immediateNavigation == NO) {
         self.accessoryView.hidden = _selectedItem ? NO : YES;
-        self.shortLabel.textColor = _selectedItem ? [self tintColor] : [UIColor blackColor];
+        self.shortLabel.textColor = _selectedItem ? [self tintColor] : [UIColor colorWithRed:0.52 green:0.78 blue:0.99 alpha:1.0];
         self.longLabel.textColor = _selectedItem ? [[self tintColor] colorWithAlphaComponent:192.0 / 255.0] : [UIColor ork_darkGrayColor];
     }
 }
@@ -206,11 +211,11 @@ static const CGFloat LabelRightMargin = 44.0;
 #pragma mark - Accessibility
 
 - (NSString *)accessibilityLabel {
-    if (self.accessoryType == UITableViewCellAccessoryDisclosureIndicator) {
-        return ORKAccessibilityStringForVariables(self.shortLabel.accessibilityLabel, self.longLabel.accessibilityLabel);
-    }
-    NSString *state = (self.selectedItem ? ORKLocalizedString(@"AX_SELECTED", nil) : ORKLocalizedString(@"AX_UNSELECTED", nil));
-    return ORKAccessibilityStringForVariables(state, self.shortLabel.accessibilityLabel, self.longLabel.accessibilityLabel);
+    return ORKAccessibilityStringForVariables(self.shortLabel.accessibilityLabel, self.longLabel.accessibilityLabel);
+}
+
+- (UIAccessibilityTraits)accessibilityTraits {
+    return UIAccessibilityTraitButton | (self.selectedItem ? UIAccessibilityTraitSelected : 0);
 }
 
 @end

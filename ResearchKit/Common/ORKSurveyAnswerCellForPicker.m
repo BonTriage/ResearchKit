@@ -30,8 +30,10 @@
 
 
 #import "ORKSurveyAnswerCellForPicker.h"
-#import "ORKQuestionStep_Internal.h"
+
 #import "ORKPicker.h"
+
+#import "ORKQuestionStep_Internal.h"
 
 
 @interface ORKSurveyAnswerCellForPicker () <ORKPickerDelegate, UIPickerViewDelegate> {
@@ -64,7 +66,7 @@
 - (void)loadPicker {
     if (_picker == nil) {
         _picker = [ORKPicker pickerWithAnswerFormat:[self.step impliedAnswerFormat] answer:self.answer delegate:self];
-        
+        [_picker.pickerView setValue:[UIColor whiteColor] forKey:@"textColor"];
         [self.picker pickerWillAppear];
         
         [self addSubview:_picker.pickerView];

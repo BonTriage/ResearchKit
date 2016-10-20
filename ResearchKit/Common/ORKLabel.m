@@ -30,7 +30,8 @@
 
 
 #import "ORKLabel.h"
-#import "ORKHelpers.h"
+
+#import "ORKHelpers_Internal.h"
 
 
 @implementation ORKLabel
@@ -66,6 +67,7 @@
 
 - (void)updateAppearance {
     self.font = [[self class] defaultFont];
+    [self setTextColor:[UIColor whiteColor]];
     [self invalidateIntrinsicContentSize];
 }
 

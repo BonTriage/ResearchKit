@@ -30,14 +30,15 @@
 
 
 #import "UIBarButtonItem+ORKBarButtonItem.h"
-#import "ORKDefines_Private.h"
+
+#import "ORKHelpers_Internal.h"
 
 
 @implementation UIBarButtonItem (ORKBarButtonItem)
 
 + (UIBarButtonItem *)ork_backBarButtonItemWithTarget:(id)target action:(SEL)selector {
-    NSString *regularImageName = @"arrowLeft";
-    NSString *landscapeImageName = @"arrowLeftLandscape";
+    NSString *regularImageName = @"prevImage";
+    NSString *landscapeImageName = @"prevImage";
 
     if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft ) {
         regularImageName = @"arrowRight";

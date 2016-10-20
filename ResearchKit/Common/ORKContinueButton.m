@@ -30,8 +30,8 @@
 
 
 #import "ORKContinueButton.h"
-#import "ORKSkin.h"
 
+#import "ORKSkin.h"
 
 static const CGFloat ContinueButtonTouchMargin = 10;
 
@@ -47,9 +47,39 @@ static const CGFloat ContinueButtonTouchMargin = 10;
         self.isDoneButton = isDoneButton;
         self.contentEdgeInsets = (UIEdgeInsets){.left=6, .right=6};
 
+        UIColor *backgroundColor = [UIColor colorWithRed:0.19 green:0.38 blue:0.74 alpha:1.0];
+        UIColor *foregroundColor = [UIColor colorWithRed:0.52 green:0.78 blue:0.99 alpha:1.0];
+        UIColor *disabledColor = [UIColor colorWithRed:0.19 green:0.38 blue:0.74 alpha:0.4];
+        UIImage *normalBackground = [ORKContinueButton imageWithColor:backgroundColor size:self.frame.size];
+        UIImage *disabledBackground = [ORKContinueButton imageWithColor:disabledColor size:self.frame.size];
+        [self setTintColor:foregroundColor];
+        [self setBackgroundImage:normalBackground forState:UIControlStateNormal];
+        [self setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        
+        [self setBackgroundImage:disabledBackground forState:UIControlStateDisabled];
+        [self setTitleColor:foregroundColor forState:UIControlStateDisabled]; // TODO - does not work
+
+        self.layer.cornerRadius = 20.0;
+        self.layer.borderWidth = 3.0;
+        self.layer.masksToBounds = YES;
         [self setUpConstraints];
     }
     return self;
+}
+
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size {
+    //    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
 }
 
 - (void)willMoveToWindow:(UIWindow *)newWindow {

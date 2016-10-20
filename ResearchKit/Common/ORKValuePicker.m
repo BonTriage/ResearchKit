@@ -30,10 +30,13 @@
 
 
 #import "ORKValuePicker.h"
-#import "ORKResult_Private.h"
-#import "ORKChoiceAnswerFormatHelper.h"
+
 #import "ORKAnswerFormat_Internal.h"
+#import "ORKChoiceAnswerFormatHelper.h"
+#import "ORKResult_Private.h"
+
 #import "ORKAccessibilityFunctions.h"
+
 
 @interface ORKValuePicker () <UIPickerViewDataSource, UIPickerViewDelegate>
 
@@ -70,6 +73,7 @@
         _pickerView.delegate = self;
         [self setAnswer:_answer];
     }
+    [_pickerView setValue:[UIColor whiteColor] forKey:@"textColor"];
     return _pickerView;
 }
 
