@@ -103,6 +103,14 @@
     } else {
         self.backgroundColor = [UIColor whiteColor];
         self.layer.borderColor = [_disableTintColor CGColor];
+        
+        // HACK - disabled button should be blue
+        
+        UIColor *backgroundColor = [UIColor colorWithRed:0.19 green:0.38 blue:0.74 alpha:1.0];
+        UIColor *disabledColor = [UIColor colorWithRed:0.52 green:0.78 blue:0.99 alpha:1.0];
+        
+        self.backgroundColor = backgroundColor;
+        self.layer.borderColor = [disabledColor CGColor];
     }
 }
 
