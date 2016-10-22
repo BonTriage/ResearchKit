@@ -196,6 +196,8 @@
     _bottomConstraint.priority = UILayoutPriorityDefaultHigh - 1;
     [constraints addObject:_bottomConstraint];
     
+    _tableView.backgroundColor = [UIColor colorWithRed:0.19 green:0.38 blue:0.74 alpha:1.0];
+    
     [self updateBottomConstraintConstant];
     [NSLayoutConstraint activateConstraints:constraints];
 }

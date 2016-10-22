@@ -35,7 +35,21 @@
 #import "ORKSkin.h"
 
 
-@implementation ORKHeadlineLabel
+@implementation ORKHeadlineLabel {
+    BOOL infoPopupUpdated;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [self init_ORKHeadlineLabel];
+    }
+    return self;
+}
+
+- (void)init_ORKHeadlineLabel {
+    self->infoPopupUpdated = FALSE;
+}
 
 + (UIFont *)defaultFontInSurveyMode:(BOOL)surveyMode {
     UIFontDescriptor *descriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
@@ -63,7 +77,26 @@
 // Nasty override (hack)
 - (void)updateAppearance {
     self.font = [self defaultFont];
-    self.textColor = [UIColor whiteColor];
+    if (!self->infoPopupUpdated && self.text != NULL) {
+        self.textColor = [UIColor whiteColor];
+        /* TODO: Add (i) with popup for info
+        // Add (i) at the end
+        NSString *headlineWithInfo = [NSString stringWithFormat:@"%@ \u24D8", self.text];
+        self.text = headlineWithInfo;
+        NSMutableAttributedString *attrs =
+        [[NSMutableAttributedString alloc]
+         initWithString: headlineWithInfo];
+        [attrs addAttribute:NSForegroundColorAttributeName
+                      value:[UIColor colorWithRed:0.52 green:0.78 blue:0.99 alpha:1.0]
+                      range:NSMakeRange(headlineWithInfo.length-1, 1)];
+        [attrs addAttribute:NSFontAttributeName
+                      value:[UIFont boldSystemFontOfSize:10.0]
+                      range:NSMakeRange(headlineWithInfo.length-1, 1)];
+        [self setAttributedText: attrs];
+         */
+
+        self->infoPopupUpdated = TRUE;
+    }
     [self invalidateIntrinsicContentSize];
 }
 
