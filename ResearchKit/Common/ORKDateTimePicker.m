@@ -105,6 +105,8 @@
             [self setDate:defaultDate];
         } else {
             NSDate *defaultDate = [dateAnswerFormat pickerDefaultDate];
+            // TODO - if they are logging a different date, use it's default date
+            // Jeff - replace defaultDate with date chosen (if not today) here
             [self setDate:defaultDate];
         }
     }
