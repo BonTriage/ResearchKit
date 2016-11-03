@@ -487,6 +487,10 @@ ORK_CLASS_AVAILABLE
  */
 @property (nonatomic, readonly) UINavigationBar *navigationBar;
 
+/////BT ADDITIONS
+
+@property (nonatomic, strong, nullable) NSDate *surveyDate;
+
 @end
 
 NS_ASSUME_NONNULL_END
