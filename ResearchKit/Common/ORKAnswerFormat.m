@@ -1499,7 +1499,7 @@ static NSArray *ork_processTextChoices(NSArray<ORKTextChoice *> *textChoices) {
     
     const NSInteger ORKScaleAnswerFormatMinimumStepSize = 1;
     const NSInteger ORKScaleAnswerFormatMinimumStepCount = 1;
-    const NSInteger ORKScaleAnswerFormatMaximumStepCount = 13;
+    const NSInteger ORKScaleAnswerFormatMaximumStepCount = 100;
     
     const NSInteger ORKScaleAnswerFormatValueLowerbound = -10000;
     const NSInteger ORKScaleAnswerFormatValueUpperbound = 10000;

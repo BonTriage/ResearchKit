@@ -507,9 +507,11 @@ typedef NS_ENUM(NSInteger, ORKQuestionSection) {
     if (self.isBeingReviewed) {
         enabled = enabled && (![self.answer isEqual:self.originalAnswer]);
     }
+    /*
     if (!self.hasNextStep) {
         enabled = TRUE; // HACK! Make the last question optional
     }
+     */
     return enabled;
 }
 
